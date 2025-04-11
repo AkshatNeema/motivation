@@ -1,35 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Motivation for You</title>
-    <link rel="stylesheet" href="/static/style.css">
+  <meta charset="UTF-8">
+  <title>Motivation for You</title>
+  <link rel="stylesheet" href="/static/style.css">
 </head>
-<body>
-    <div class="quote-box">
-        <p id="quote" class="quote">Loading...</p>
-        <button onclick="fetchQuote()">🔁 New Quote</button>
+<body class="light-mode">
+  <div class="quote-box">
+    <p id="quote" class="quote">Loading...</p>
+    <div class="button-group">
+      <button onclick="fetchQuote()">🔁 New Quote</button>
+      <button onclick="saveFavorite()">❤️ Save</button>
+      <button onclick="shareQuote()">📤 Share</button>
     </div>
+    <div class="toggle-container">
+      <label class="switch">
+        <input type="checkbox" id="modeToggle" onchange="toggleMode()">
+        <span class="slider"></span>
+      </label>
+      <span class="toggle-label">Dark Mode</span>
+    </div>
+  </div>
 
-    <script>
-        async function fetchQuote() {
-            const res = await fetch('/api/quote');
-            const data = await res.json();
-            const quoteEl = document.getElementById('quote');
-            
-            // Animation: Fade out
-            quoteEl.classList.remove('fade-in');
-            void quoteEl.offsetWidth; // Trigger reflow
+  <script>
+    let currentQuote = "";
 
-            // Set new quote
-            quoteEl.textContent = `“${data.quote}”`;
+    async function fetchQuote() {
+      const res = await fetch('/api/quote');
+      const data = await res.json();
+      currentQuote = data.quote;
+      const quoteEl = document.getElementById('quote');
 
-            // Animation: Fade in
-            quoteEl.classList.add('fade-in');
-        }
+      quoteEl.classList.remove('fade-in');
+      void quoteEl.offsetWidth;
+      quoteEl.textContent = `“${currentQuote}”`;
+      quoteEl.classList.add('fade-in');
+    }
 
-        // Load on first visit
-        window.onload = fetchQuote;
-    </script>
+    function saveFavorite() {
+      let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+      if (!favorites.includes(currentQuote)) {
+        favorites.push(currentQuote);
+        localStorage.setItem("favorites", JSON.stringify(favorites));
+        alert("Saved to favorites!");
+      } else {
+        alert("Already in favorites!");
+      }
+    }
+
+    function shareQuote() {
+      const text = encodeURIComponent(`"${currentQuote}"`);
+      const twitter = `https://twitter.com/intent/tweet?text=${text}`;
+      const whatsapp = `https://wa.me/?text=${text}`;
+      const choice = confirm("Click OK to share on Twitter or Cancel for WhatsApp");
+      window.open(choice ? twitter : whatsapp, "_blank");
+    }
+
+    function toggleMode() {
+      document.body.classList.toggle("dark-mode");
+      document.body.classList.toggle("light-mode");
+      const mode = document.body.classList.contains("dark-mode") ? "dark" : "light";
+      localStorage.setItem("theme", mode);
+    }
+
+    // Load mode preference on startup
+    window.onload = () => {
+      const theme = localStorage.getItem("theme");
+      if (theme === "dark") {
+        document.body.classList.add("dark-mode");
+        document.getElementById("modeToggle").checked = true;
+      }
+      fetchQuote();
+    };
+  </script>
 </body>
 </html>
