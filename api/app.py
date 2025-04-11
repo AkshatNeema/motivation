@@ -3,13 +3,13 @@ from flask_bcrypt import Bcrypt
 from pymongo import MongoClient
 import random,os
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates', static_folder='static')
 app.secret_key = os.environ.get("FLASK_SECRET_KEY")
 bcrypt = Bcrypt(app)
 
 # MongoDB setup
 client = MongoClient("mongodb+srv://akshatneema01:h2myDpyt4gebfCIR@motivation.lbiliq8.mongodb.net/?retryWrites=true&w=majority&appName=Motivation")
-db = client['motivationalApp']
+db = client['MotivationalApp']
 users = db['users']
 
 # Sample quotes
@@ -72,3 +72,6 @@ def handle_favorites():
         if quote not in user['favorites']:
             users.update_one({'_id': session['email']}, {'$push': {'favorites': quote}})
     return jsonify({'favorites': user['favorites']})
+
+if __name__ == "__main__":
+    app.run(debug=True)
