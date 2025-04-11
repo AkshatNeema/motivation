@@ -2,9 +2,7 @@ from flask import Flask, request, session, redirect, url_for, render_template, j
 from flask_bcrypt import Bcrypt
 from pymongo import MongoClient
 import random,os
-from dotenv import load_dotenv
 
-load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY")
 bcrypt = Bcrypt(app)
