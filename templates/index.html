@@ -3,34 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <title>Motivation for You</title>
-    <style>
-        body {
-            background: linear-gradient(to right, #a1c4fd, #c2e9fb);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .quote-box {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            max-width: 600px;
-        }
-        .quote {
-            font-size: 24px;
-            color: #333;
-            font-style: italic;
-        }
-    </style>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <div class="quote-box">
-        <p class="quote">“{{ quote }}”</p>
+        <p id="quote" class="quote">Loading...</p>
+        <button onclick="fetchQuote()">🔁 New Quote</button>
     </div>
+
+    <script>
+        async function fetchQuote() {
+            const res = await fetch('/api/quote');
+            const data = await res.json();
+            const quoteEl = document.getElementById('quote');
+            
+            // Animation: Fade out
+            quoteEl.classList.remove('fade-in');
+            void quoteEl.offsetWidth; // Trigger reflow
+
+            // Set new quote
+            quoteEl.textContent = `“${data.quote}”`;
+
+            // Animation: Fade in
+            quoteEl.classList.add('fade-in');
+        }
+
+        // Load on first visit
+        window.onload = fetchQuote;
+    </script>
 </body>
 </html>

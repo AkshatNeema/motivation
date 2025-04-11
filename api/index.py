@@ -1,7 +1,7 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 import random
 
-app = Flask(__name__, template_folder="../templates")
+app = Flask(__name__, template_folder="../templates", static_folder="../static")
 
 quotes = [
     "Believe in yourself and all that you are.",
@@ -11,13 +11,19 @@ quotes = [
     "Your limitation—it’s only your imagination.",
     "Dream it. Wish it. Do it.",
     "Sometimes later becomes never. Do it now.",
-    "Great things never come from comfort zones."
+    "Great things never come from comfort zones.",
+    "Hardships often prepare ordinary people for an extraordinary destiny.",
+    "Do what you can with all you have, wherever you are."
 ]
 
 @app.route("/")
 def home():
-    quote = random.choice(quotes)
-    return render_template("index.html", quote=quote)
+    return render_template("index.html")
 
-# For Vercel
+@app.route("/api/quote")
+def get_quote():
+    quote = random.choice(quotes)
+    return jsonify({"quote": quote})
+
+# Required for Vercel
 app = app
