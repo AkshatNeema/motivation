@@ -24,6 +24,14 @@
 
   <script>
     let currentQuote = "";
+    const backgrounds = [
+      "https://source.unsplash.com/1600x900/?nature,motivation",
+      "https://source.unsplash.com/1600x900/?mountain,sky",
+      "https://source.unsplash.com/1600x900/?sunrise,hope",
+      "https://source.unsplash.com/1600x900/?forest,light",
+      "https://source.unsplash.com/1600x900/?beach,calm"
+    ];
+
 
     async function fetchQuote() {
       const res = await fetch('/api/quote');
@@ -35,6 +43,7 @@
       void quoteEl.offsetWidth;
       quoteEl.textContent = `“${currentQuote}”`;
       quoteEl.classList.add('fade-in');
+      changeBackground();
     }
 
     function saveFavorite() {
@@ -62,6 +71,12 @@
       const mode = document.body.classList.contains("dark-mode") ? "dark" : "light";
       localStorage.setItem("theme", mode);
     }
+    function changeBackground() {
+      const randomImage = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+      document.body.style.backgroundImage = `url(${randomImage})`;
+      document.body.style.backgroundSize = "cover";
+      document.body.style.backgroundPosition = "center";
+    }
 
     // Load mode preference on startup
     window.onload = () => {
@@ -71,6 +86,7 @@
         document.getElementById("modeToggle").checked = true;
       }
       fetchQuote();
+      changeBackground();
     };
   </script>
 </body>
